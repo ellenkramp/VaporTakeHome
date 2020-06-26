@@ -26,3 +26,5 @@ final class Playlist: PostgreSQLModel {
 }
 
 extension Playlist: Content { }
+
+extension Playlist: Parameter { }
