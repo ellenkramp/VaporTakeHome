@@ -9,7 +9,7 @@ final class Playlist: PostgreSQLModel {
     var description: String
     var songs: [Int]
 
-    init(id: Int? = nil, name: String, description: String, songs: [Int]) {
+    init(id: Int? = nil, name: String, description: String, songs: [Int] = []) {
         self.id = id
         self.name = name
         self.description = description

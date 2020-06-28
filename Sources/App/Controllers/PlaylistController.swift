@@ -4,7 +4,6 @@ final class PlaylistController {
     
     /// Get playlists
     func getPlaylists(_ req: Request) throws -> Future<[Playlist]> {
-        print(req)
         return Playlist.query(on: req).all()
     }
 
@@ -26,9 +25,10 @@ final class PlaylistController {
     func updatePlaylist(_ req: Request) throws -> Future<Playlist> {
         return try req.parameters.next(Playlist.self).flatMap({ playlist -> EventLoopFuture<Playlist> in
             return try req.content.decode(Playlist.self).flatMap { updatedPlaylist -> EventLoopFuture<Playlist> in
+                print(updatedPlaylist.name)
+                print(updatedPlaylist.description)
                 playlist.name = updatedPlaylist.name
                 playlist.description = updatedPlaylist.description
-                playlist.songs = updatedPlaylist.songs
                 return playlist.update(on: req)
             }
         })
@@ -44,19 +44,20 @@ final class PlaylistController {
     /// Add song to playlist
     func addSongToPlaylist(_ req: Request) throws -> Future<Playlist> {
         return try req.parameters.next(Playlist.self).flatMap({ playlist -> EventLoopFuture<Playlist> in
-            return try req.content.decode(Playlist.self).flatMap { updatedPlaylist -> EventLoopFuture<Playlist> in
-                playlist.name = updatedPlaylist.name
-                playlist.description = updatedPlaylist.description
-                playlist.songs = updatedPlaylist.songs
+                let releaseId = try req.parameters.next(Int.self)
+                playlist.songs.append(releaseId)
                 return playlist.update(on: req)
-            }
         })
     }
 
     /// Remove song from playlist
-    func removeSongFromPlaylist(_ req: Request) throws -> Future<HTTPStatus> {
-        return try req.parameters.next(Playlist.self).flatMap { playlist in
-            return playlist.delete(on: req)
-        }.transform(to: .noContent)
+    func removeSongFromPlaylist(_ req: Request) throws -> Future<Playlist> {
+        return try req.parameters.next(Playlist.self).flatMap({ playlist -> EventLoopFuture<Playlist> in
+                let releaseId = try req.parameters.next(Int.self)
+                if let index = playlist.songs.firstIndex(of: releaseId) {
+                    playlist.songs.remove(at: index)
+                }
+            return playlist.update(on: req)
+        })
     }
 }
