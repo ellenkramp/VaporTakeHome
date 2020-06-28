@@ -5,10 +5,14 @@ import Vapor
 class MockArtistService: ArtistService, Service {
     var artistsToReturn: [Artist] = []
     var searchedArtists: [String] = []
+    var songsToReturn: [Song] = []
+    var searchedSongs: [Song] = []
 
     func reset() {
         artistsToReturn = []
         searchedArtists = []
+        songsToReturn = []
+        searchedSongs = []
     }
 
     // MARK - ArtistService
@@ -16,4 +20,10 @@ class MockArtistService: ArtistService, Service {
         searchedArtists.append(artist)
         return req.future(artistsToReturn)
     }
+    
+    func searchSong(song: String, artistId: Int, on req: Request) throws -> EventLoopFuture<[Song]> {
+        searchedArtists.append(song)
+        return req.future(songsToReturn)
+    }
+    
 }

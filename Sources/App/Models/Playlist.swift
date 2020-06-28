@@ -9,7 +9,6 @@ final class Playlist: PostgreSQLModel {
     var description: String
     var songs: [Int]
 
-    /// Creates a new `User`.
     init(id: Int? = nil, name: String, description: String, songs: [Int]) {
         self.id = id
         self.name = name

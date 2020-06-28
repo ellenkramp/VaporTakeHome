@@ -3,7 +3,7 @@ import Vapor
 struct Song: Codable {
     let id: Int
     let title: String
-    let label: String
+    let label: String?
     let thumb: String?
 
     enum CodingKeys: String, CodingKey {

@@ -23,5 +23,5 @@ struct SongSearchResponse: Decodable {
     }
 
     let pagination: Pagination
-    let results: [Song]
+    let releases: [Song]
 }

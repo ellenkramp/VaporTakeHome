@@ -18,14 +18,14 @@ public func routes(_ router: Router) throws {
 
     let artistController = ArtistController()
     router.get("artists/search", use: artistController.searchArtist)
-    router.get("artists", ":artistId", "songs/search", use: artistController.searchArtist)
+    router.get("artists", Int.parameter, "songs/search", use: artistController.searchSong)
 
     let playlistController = PlaylistController()
     router.get("playlists", use: playlistController.getPlaylists)
     router.post("playlists", use: playlistController.createPlaylist)
-    router.get("playlists/:playlistId", use: playlistController.findPlaylistById)
-    router.put("playlists/:playlistId", use: playlistController.updatePlaylist)
-    router.delete("playlists/:playlistId", use: playlistController.deletePlaylist)
-    router.post("playlists/:playlistId/songs/:songId", use: playlistController.addSongToPlaylist)
-    router.delete("playlists/:playlistId/songs/:songId", use: playlistController.removeSongFromPlaylist)
+    router.get("playlists", Playlist.parameter, use: playlistController.findPlaylistById)
+    router.put("playlists", Playlist.parameter, use: playlistController.updatePlaylist)
+    router.delete("playlists", Playlist.parameter, use: playlistController.deletePlaylist)
+    router.post("playlists", Playlist.parameter, "songs", Int.parameter, use: playlistController.addSongToPlaylist)
+    router.delete("playlists", Playlist.parameter, "songs", Int.parameter, use: playlistController.removeSongFromPlaylist)
 }

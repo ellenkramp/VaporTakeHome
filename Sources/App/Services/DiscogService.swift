@@ -21,17 +21,12 @@ struct DiscogService: ArtistService {
             })
         })
     }
-    func searchSong(song: String, artistId: String, on req: Request) throws -> Future<[Song]> {
-        var components = URLComponents(string: searchURL)
-        components?.queryItems = [URLQueryItem(name: "q", value: song), URLQueryItem(name: "type", value: "song"), URLQueryItem(name: "artist", value: artistId)]
-
-        guard let url = components?.url else {
-            fatalError("Couldn't create search URL")
-        }
-
+    func searchSong(song: String, artistId: Int, on req: Request) throws -> Future<[Song]> {
+        let url = "https://api.discogs.com/artists/\(artistId)/releases"
+        
         return try req.client().get(url, headers: headers).flatMap({ response in
             return try response.content.decode(SongSearchResponse.self).flatMap({ songSearch in
-                return req.future(songSearch.results)
+                return req.future(songSearch.releases.filter{ $0.title.lowercased().contains(song.lowercased()) })
             })
         })
     }

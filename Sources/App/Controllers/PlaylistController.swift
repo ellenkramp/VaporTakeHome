@@ -16,10 +16,10 @@ final class PlaylistController {
     }
 
     /// Find playlist by id
-    func findPlaylistById(_ req: Request) throws -> Future<[Playlist]> {
-        let artist = try req.query.get(String.self, at: "q")
-        let service = try req.make(PlaylistService.self)
-        return try service.findPlaylistById(artist: artist, on: req)    
+    func findPlaylistById(_ req: Request) throws -> Future<Playlist> {
+        return try req.parameters.next(Playlist.self).flatMap { playlist in
+            return req.future(playlist)
+        }
     }
 
     /// Update playlist by id
@@ -35,23 +35,28 @@ final class PlaylistController {
     }
 
     /// Delete playlist by id
-    func deletePlaylist(_ req: Request) throws -> Future<[Playlist]> {
-        let artist = try req.query.get(String.self, at: "q")
-        let service = try req.make(PlaylistService.self)
-        return try service.deletePlaylist(artist: artist, on: req)    
+    func deletePlaylist(_ req: Request) throws -> Future<HTTPStatus> {
+        return try req.parameters.next(Playlist.self).flatMap { playlist in
+            return playlist.delete(on: req)
+        }.transform(to: .noContent)
     }
 
     /// Add song to playlist
-    func addSongToPlaylist(_ req: Request) throws -> Future<[Playlist]> {
-        let artist = try req.query.get(String.self, at: "q")
-        let service = try req.make(PlaylistService.self)
-        return try service.addSongToPlaylist(artist: artist, on: req)    
+    func addSongToPlaylist(_ req: Request) throws -> Future<Playlist> {
+        return try req.parameters.next(Playlist.self).flatMap({ playlist -> EventLoopFuture<Playlist> in
+            return try req.content.decode(Playlist.self).flatMap { updatedPlaylist -> EventLoopFuture<Playlist> in
+                playlist.name = updatedPlaylist.name
+                playlist.description = updatedPlaylist.description
+                playlist.songs = updatedPlaylist.songs
+                return playlist.update(on: req)
+            }
+        })
     }
 
     /// Remove song from playlist
-    func removeSongFromPlaylist(_ req: Request) throws -> Future<[Playlist]> {
-        let artist = try req.query.get(String.self, at: "q")
-        let service = try req.make(PlaylistService.self)
-        return try service.removeSongFromPlaylist(artist: artist, on: req)    
+    func removeSongFromPlaylist(_ req: Request) throws -> Future<HTTPStatus> {
+        return try req.parameters.next(Playlist.self).flatMap { playlist in
+            return playlist.delete(on: req)
+        }.transform(to: .noContent)
     }
 }
