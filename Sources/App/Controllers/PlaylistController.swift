@@ -24,11 +24,9 @@ final class PlaylistController {
     /// Update playlist by id
     func updatePlaylist(_ req: Request) throws -> Future<Playlist> {
         return try req.parameters.next(Playlist.self).flatMap({ playlist -> EventLoopFuture<Playlist> in
-            return try req.content.decode(Playlist.self).flatMap { updatedPlaylist -> EventLoopFuture<Playlist> in
-                print(updatedPlaylist.name)
-                print(updatedPlaylist.description)
-                playlist.name = updatedPlaylist.name
-                playlist.description = updatedPlaylist.description
+            return try req.content.decode(UpdatePlaylistRequest.self).flatMap { updatedPlaylist -> EventLoopFuture<Playlist> in
+                playlist.name = updatedPlaylist.name ?? playlist.name.self
+                playlist.description = updatedPlaylist.description ?? playlist.description.self
                 return playlist.update(on: req)
             }
         })

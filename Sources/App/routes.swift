@@ -16,10 +16,12 @@ public func routes(_ router: Router) throws {
     router.put("users", User.parameter, use: userController.update)
     router.delete("users", User.parameter, use: userController.delete)
 
+    // artist controller
     let artistController = ArtistController()
     router.get("artists/search", use: artistController.searchArtist)
     router.get("artists", Int.parameter, "songs/search", use: artistController.searchSong)
 
+    // playlist controller
     let playlistController = PlaylistController()
     router.get("playlists", use: playlistController.getPlaylists)
     router.post("playlists", use: playlistController.createPlaylist)

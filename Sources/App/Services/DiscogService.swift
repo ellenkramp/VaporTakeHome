@@ -21,6 +21,7 @@ struct DiscogService: ArtistService {
             })
         })
     }
+
     func searchSong(song: String, artistId: Int, on req: Request) throws -> Future<[Song]> {
         let url = "https://api.discogs.com/artists/\(artistId)/releases"
         
